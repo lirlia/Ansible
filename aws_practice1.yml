@@ -1,0 +1,51 @@
+---
+- hosts: localhost
+  user: ec2-user
+  become: true
+  become_user: root
+  gather_facts: false
+
+  tasks:
+    - name: yum install httpd mysql php php-mysql php-mbstring 
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - httpd
+        - mysql
+        - php
+        - php-mysql
+        - php-mbstring
+
+    - name: start httpd mysql
+      service: 
+        name: "{{ item }}"
+        enabled: yes 
+        state: started
+      with_items:
+        - httpd
+        - mysql
+
+    - name: wget wordpress
+      get_url:
+        url: http://ja.wordpress.org/latest-ja.tar.gz
+        dest:  /home/ec2-user/latest-ja.tar.gz
+        mode: 0755
+
+    - name: unarchive wordpress
+      unarchive:
+        src: /home/ec2-user/latest-ja.tar.gz
+        dest: /home/ec2-user
+
+    - name: copy file
+      copy:
+        directory_mode: yes
+        src: /home/ec2-user/wordpress/
+        dest: /var/www/html/
+
+    - name: file permmision change
+      file:
+        path: /var/www/html/
+        owner: apache
+        group: apache
+        recurse: yes

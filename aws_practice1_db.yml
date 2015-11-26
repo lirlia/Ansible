@@ -1,0 +1,13 @@
+---
+- hosts: localhost
+  user: ec2-user
+  become: true
+  become_user: root
+  gather_facts: false
+
+  tasks:
+    - name: database create
+      mysql_db:
+        name: wordpress
+        login_user: wpuser
+        login_password: wppassword
