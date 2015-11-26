@@ -1,0 +1,9 @@
+---
+# tasks file for roles
+#
+
+- name: test
+  command: date
+  register: result
+
+- debug: result
